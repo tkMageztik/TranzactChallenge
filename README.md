@@ -11,4 +11,7 @@ to resolve the challenge (or at least i think so... :'))
 
 PD2: If you clean or recompile test project, ensure to create a file with name "UnitTestProject1.dll.config" that will be a copy of TZ.AtNinjas.App.SearchFight.exe.config, in other way you cant run the last test method 4.
 
+PD3: In test cases and in release, ensure to change the last parameter "useProxy" to false (in normal execute variable is on json config file)
+
 ![alt text](https://github.com/tkMageztik/TranzactChallenge/blob/main/code%20coverage.png?raw=true)
+

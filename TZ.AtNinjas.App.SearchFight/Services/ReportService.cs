@@ -8,7 +8,6 @@ namespace TZ.AtNinjas.App.SearchFight.Services
     {
         public void Report(List<Result> results, List<ISearch> searcheEngines)
         {
-
             Console.WriteLine(string.Empty);
 
             foreach (ISearch searchEngine in searcheEngines)

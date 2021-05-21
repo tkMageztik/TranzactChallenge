@@ -8,7 +8,7 @@ namespace TZ.AtNinjas.App.SearchFight
 {
     public class SearchFight
     {
-        JsonValue SearchEnginesDic;
+        JsonValue ConfigDics;
         private string[] Words { get; set; }
 
         public SearchFight(string[] args)
@@ -21,7 +21,7 @@ namespace TZ.AtNinjas.App.SearchFight
             using (var reader = new StreamReader(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                "appsettings.json")))
             {
-                SearchEnginesDic = JsonValue.Load(reader);
+                ConfigDics = JsonValue.Load(reader);
             }
         }
 
@@ -32,16 +32,18 @@ namespace TZ.AtNinjas.App.SearchFight
         }
         public void Fight()
         {
-            var searchEnginesConfig = SearchEnginesDic["searchEngines"];
+            var searchEnginesConfig = ConfigDics["searchEngines"];
+            var useProxy = ConfigDics["useProxy"];
             var google = searchEnginesConfig["Google"];
             var bing = searchEnginesConfig["Bing"];
             var yahoo = searchEnginesConfig["Yahoo"];
+            var msnSearch = searchEnginesConfig["MSN Search"];
 
             List<ISearch> searchEngines = new List<ISearch>
             {
-                new GoogleSearchEngine(google["url"],google["pattern"]),
-                new BingSearchEngine(bing["url"],bing["pattern"]),
-                new YahooSearchEngine(yahoo["url"],yahoo["pattern"]),
+                new GoogleSearchEngine(google["url"],google["pattern"],useProxy),
+                new BingSearchEngine(bing["url"],bing["pattern"],useProxy),
+                new YahooSearchEngine(yahoo["url"],yahoo["pattern"],useProxy),
                 new AnotherNonWebSearchEngine("Tengo que encontrar la palabra .net en este texto"),
             };
 

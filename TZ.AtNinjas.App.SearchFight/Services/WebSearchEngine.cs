@@ -9,57 +9,57 @@ namespace TZ.AtNinjas.App.SearchFight.Services
     public abstract class WebSearchEngine : ISearch
     {
         private readonly FileService fileService;
-        public WebSearchEngine()
+        public WebSearchEngine() : this(new FileService()) { }
+        public WebSearchEngine(FileService fileService)
         {
-            this.fileService = new FileService();
-
+            this.fileService = fileService;
         }
         public abstract string Url();
         public abstract string Pattern();
         public abstract string SearchEngineName();
+        public abstract bool UseProxy();
 
         public virtual async Task<string> GetResults(string searchWord)
         {
+            var client = new HttpClient();
 
-#if DEBUG
-            var proxy = new WebProxy
+            if (UseProxy())
             {
-                Address = new Uri(""),
-                BypassProxyOnLocal = false,
-                UseDefaultCredentials = false,
+                var proxy = new WebProxy
+                {
+                    Address = new Uri(""),
+                    BypassProxyOnLocal = false,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(
+                        userName: "",
+                        password: "")
+                };
 
-                Credentials = new NetworkCredential(
-                    userName: "",
-                    password: "")
-            };
+                var httpClientHandler = new HttpClientHandler
+                {
+                    Proxy = proxy,
+                };
 
-            var httpClientHandler = new HttpClientHandler
-            {
-                Proxy = proxy,
-            };
+                httpClientHandler.PreAuthenticate = true;
+                httpClientHandler.UseDefaultCredentials = false;
 
-            httpClientHandler.PreAuthenticate = true;
-            httpClientHandler.UseDefaultCredentials = false;
-
-            using (var client = new HttpClient(httpClientHandler, false))
-#else
-            using (var client = new HttpClient())
-#endif
-
-            {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
-
-                var result = client.GetAsync(this.Url() + searchWord);
-
-
-                return await result.Result.Content.ReadAsStringAsync();
+                client = new HttpClient(httpClientHandler, false);
             }
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+
+            var result = client.GetAsync(this.Url() + searchWord);
+
+            return await result.Result.Content.ReadAsStringAsync();
         }
+
         public virtual decimal? GetFormatedResult(string searchWord)
         {
-            this.fileService.WriteAllText(GetResults(searchWord).Result, SearchEngineName());
+            string html = GetResults(searchWord).Result;
 
-            MatchCollection match = Regex.Matches(GetResults(searchWord).Result, Pattern());
+            this.fileService.WriteAllText(html, SearchEngineName());
+
+            MatchCollection match = Regex.Matches(html, Pattern());
 
             if (match.Count > 0)
             {

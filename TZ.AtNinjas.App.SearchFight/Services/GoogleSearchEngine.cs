@@ -4,12 +4,14 @@
     {
         private readonly string url;
         private readonly string pattern;
+        private readonly bool useProxy;
         private const string Google = "Google";
 
-        public GoogleSearchEngine(string url, string pattern)
+        public GoogleSearchEngine(string url, string pattern, bool useProxy)
         {
             this.url = url;
             this.pattern = pattern;
+            this.useProxy = useProxy;
         }
         public override string Url()
         {
@@ -18,6 +20,10 @@
         public override string Pattern()
         {
             return this.pattern;
+        }
+        public override bool UseProxy()
+        {
+            return this.useProxy;
         }
         public override string SearchEngineName()
         {

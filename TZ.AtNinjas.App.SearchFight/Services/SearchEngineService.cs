@@ -7,26 +7,30 @@ namespace TZ.AtNinjas.App.SearchFight.Services
     {
         public List<Result> Search(string[] searchWords, List<ISearch> searcheEngines)
         {
-            List<Result> results = null;
+            List<Result> results = new List<Result>();
 
             foreach (string word in searchWords)
             {
                 string searchWordResults = "";
-                foreach (var searcheEngine in searcheEngines)
+                foreach (var searchEngine in searcheEngines)
                 {
                     try
                     {
-                        results = new List<Result>();
+                        if (searchEngine is WebSearchEngine webSearchEngine)
+                        {
+                            if (IsNotValid(webSearchEngine))
+                                continue;
+                        }
 
-                        decimal? result = searcheEngine.GetFormatedResult(word);
+                        decimal? result = searchEngine.GetFormatedResult(word);
 
-                        results.Add(new Result { SearchEngine = searcheEngine.SearchEngineName(), Word = word, TotalResults = result });
+                        results.Add(new Result { SearchEngine = searchEngine.SearchEngineName(), Word = word, TotalResults = result });
 
-                        searchWordResults += searcheEngine.SearchEngineName() + ": " + result + " ";
+                        searchWordResults += searchEngine.SearchEngineName() + ": " + result + " ";
                     }
                     catch
                     {
-                        searchWordResults += searcheEngine.SearchEngineName() + ": " + "ERROR ";
+                        searchWordResults += searchEngine.SearchEngineName() + ": " + "ERROR ";
                     }
 
                 }
@@ -35,6 +39,11 @@ namespace TZ.AtNinjas.App.SearchFight.Services
             }
 
             return results;
+        }
+
+        private bool IsNotValid(WebSearchEngine webSearchEngine)
+        {
+            return string.IsNullOrEmpty(webSearchEngine.Url()) || string.IsNullOrEmpty(webSearchEngine.Pattern());
         }
     }
 }
