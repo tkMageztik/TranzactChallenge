@@ -15,3 +15,6 @@ PD3: In test cases and in release, ensure to change the last parameter "useProxy
 
 ![alt text](https://github.com/tkMageztik/TranzactChallenge/blob/main/code%20coverage.png?raw=true)
 
+2)
+![alt text](https://github.com/tkMageztik/TranzactChallenge/blob/main/code%20coverage2.png?raw=true)
+
